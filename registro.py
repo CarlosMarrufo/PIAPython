@@ -30,12 +30,11 @@ def mostrarMenu(): #Función para mostrar el menú principal
             elif toDo == "8":
                 pass
             elif toDo == "0":
-                pass
+                break
         else:
             print("*"*60)
-            print('Opción inválida...')
-            input("Presiona ENTER para continuar...")
-        break
+            input('Opción inválida Presiona ENTER para continuar...')
+        
         
 def main(): #Función principal
     mostrarMenu()
