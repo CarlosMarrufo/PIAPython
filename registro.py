@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
-lista_datos = ["carlos@hotmail.com",]
+from clases import Participante
+
+lista_datos = []
 def mostrarMenu(): #Función para mostrar el menú principal
     while(True):
         print(22*"*"+" MENÚ PRINCIPAL "+"*"*22)
@@ -38,12 +40,16 @@ def mostrarMenu(): #Función para mostrar el menú principal
             input('Opción inválida Presiona ENTER para continuar...')
         
 def cargarInformacion():
+    global lista_datos
     try:
         archivo_datos = open('datos.csv', 'r')
+        for linea in archivo_datos:
+            datos = linea.strip()
+            lista_datos.append(datos)
         print('**Se ha cargado el archivo de datos')
     except:
         archivo_datos = open('datos.csv', 'w')
-        archivo_datos.write('Folio | Correo | Nombre | Nacimiento | Momento')
+        archivo_datos.write('Correo | Nombre | Nacimiento | Monto | Folio | Momento')
         input("**Se ha creado un archivo de datos nuevo, presiona ENTER para volver al menú")
 
 def registrarParticipante():
@@ -63,6 +69,8 @@ def registrarParticipante():
                 else:
                     nombre = validarNombre()
                     nacimiento = validarNacimiento()
+                    monto = input("Ingrese la aportación (cantidad monetaria): ")
+                    folio = asignarFolio()
                     return False #Terminar while SOLO PARA TEST
             else:
                 input("El correo ingresado no es válido, presiona ENTER para regresar al menú...")
@@ -95,6 +103,10 @@ def validarNacimiento(): #Función para comprobar si la fecha de nacimiento es v
         except: #Es inválido
             input("La fecha de nacimiento no es válida, comprueba el formato. Presiona ENTER para continuar...")
     return nacimiento            
+
+def asignarFolio():
+    global lista_datos
+    print(lista_datos[0])
 
 def main(): #Función principal
     mostrarMenu()
