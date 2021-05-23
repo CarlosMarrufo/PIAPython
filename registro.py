@@ -4,6 +4,7 @@ from clases import Participante
 
 lista_datos = []
 index_linea = 0
+info_cargada = False
 info_actualizada = True
 
 def mostrarMenu(): #Función para mostrar el menú principal
@@ -44,24 +45,31 @@ def mostrarMenu(): #Función para mostrar el menú principal
         
 def cargarInformacion():
     global lista_datos
+    global info_cargada
     try:
         archivo_datos = open('datos.csv', 'r')
         for linea in archivo_datos:
             datos = linea.strip()
             lista_datos.append(datos)
         asignarFolio()
+        info_cargada = True
         input('**Se ha cargado el archivo de datos, presiona ENTER para volver al menú principal...')
     except:
         archivo_datos = open('datos.csv', 'w')
         archivo_datos.write('Correo | Nombre | Nacimiento | Monto | Folio | Momento')
+        info_cargada = True
         input("**Se ha creado un archivo de datos nuevo, presiona ENTER para volver al menú principal...")
 
 def registrarParticipante():
     global lista_datos
     global index_linea
     global info_actualizada
+    global info_cargada
     index_linea = 0
     while(True):
+        if not info_cargada: 
+            input("No se ha encontrado un archivo de datos, favor de actualizar la información...")
+            return False
         correo = validarCorreo()
         if index_linea > 0:
             input("El correo ingresado ya se encuentra registrado, presiona ENTER para continuar...")
@@ -72,14 +80,29 @@ def registrarParticipante():
             folio = asignarFolio()
             registro = Participante(correo, nombre, nacimiento, monto, folio)
             lista_datos.append(registro.registrarParticipante())
-            input(f'Se ha registrado el participante {nombre.upper()} con el folio {folio}, presiona ENTER para volver al menú principal...')
             info_actualizada = False
+            input(f'Se ha registrado el participante {nombre.upper()} con el folio {folio}, presiona ENTER para volver al menú principal...')
             return False
         else:
             return False
 
 def buscarParticipante():
-    pass
+    global lista_datos
+    global info_cargada
+    global index_linea
+    while(True):
+        if not info_cargada:
+            input("No se ha encontrado un archivo de datos, favor de actualizar la información...")
+            return False
+        correo = validarCorreo()
+        if index_linea == 0:
+            input("No se ha encontrado el correo en la base de datos, presiona ENTER para regresar al menú principal...")
+        else:
+            participante = darFormato(index_linea)
+            print("*"*14+" Información de participante "+"*"*14)
+            print(f'Correo: {participante[0]}\nNombre: {participante[1]}\nNacimiento: {participante[2]}\nMonto: {participante[3]}\nFolio: {participante[4]}\nMomento: {participante[5]}')
+            input("Preciona ENTER para volver al menú principal...")
+        return False
 
 def validarCorreo(): #Función para validar el correo
     global index_linea
@@ -144,6 +167,10 @@ def asignarFolio():
     else:
         folio = int(str(lista_datos[-1]).split(" | ")[4])
     return folio
+
+def darFormato(index_linea): #Función para dar formato a un registro
+    global lista_datos
+    return (lista_datos[index_linea].strip().split(" | "))
 
 def main(): #Función principal
     mostrarMenu()
