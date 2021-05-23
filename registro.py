@@ -46,7 +46,7 @@ def cargarInformacion():
         for linea in archivo_datos:
             datos = linea.strip()
             lista_datos.append(datos)
-        print('**Se ha cargado el archivo de datos')
+        input('**Se ha cargado el archivo de datos')
     except:
         archivo_datos = open('datos.csv', 'w')
         archivo_datos.write('Correo | Nombre | Nacimiento | Monto | Folio | Momento')
