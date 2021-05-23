@@ -28,9 +28,9 @@ def mostrarMenu(): #Función para mostrar el menú principal
             elif to_do == "3":
                 buscarParticipante()
             elif to_do == "4":
-                pass
+                modificarParticipante()
             elif to_do == "5":
-                pass
+                eliminarParticipante()
             elif to_do == "6":
                 pass
             elif to_do == "7":
@@ -95,13 +95,76 @@ def buscarParticipante():
             input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
             return False
         correo = validarCorreo()
+        if not correo:
+            return False
         if index_linea == 0:
             input("**No se ha encontrado el correo en la base de datos, presiona ENTER para regresar al menú principal...")
+            return False
         else:
             participante = darFormato(index_linea)
             print("*"*14+" Información de participante "+"*"*14)
             print(f'Correo: {participante[0]}\nNombre: {participante[1]}\nNacimiento: {participante[2]}\nMonto: {participante[3]}\nFolio: {participante[4]}\nMomento: {participante[5]}')
             input("**Preciona ENTER para volver al menú principal...")
+        return False
+
+def modificarParticipante():
+    global lista_datos
+    global info_cargada
+    global index_linea
+    while(True):
+        if not info_cargada:
+            input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
+            return False
+        correo = validarCorreo()
+        if not correo:
+            return False
+        if index_linea == 0:
+            input("**No se ha encontrado el correo en la base de datos, presiona ENTER para regresar al menú principal...")
+            return False
+        else:
+            participante = darFormato(index_linea)
+            print("*"*14+" Información de participante "+"*"*14)
+            print(f'Correo: {participante[0]}\nNombre: {participante[1]}\nNacimiento: {participante[2]}\nMonto: {participante[3]}\nFolio: {participante[4]}\nMomento: {participante[5]}')
+            print("**Ingresar los datos actualizados a continuación")
+            nombre = validarNombre()
+            nacimiento = validarNacimiento()
+            registro = Participante(participante[0], nombre, nacimiento, participante[3], participante[4], datetime.strptime(participante[5], "%Y-%m-%d %H:%M"))
+            lista_datos[index_linea] = (registro.registrarParticipante())
+            input("**Se ha actualizado la información del participante, presiona ENTER para regresar al menú principal...")
+        return False
+
+def eliminarParticipante():
+    global lista_datos
+    global index_linea
+    global info_cargada
+    while(True):
+        if not info_cargada:
+            input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
+            return False
+        correo = validarCorreo()
+        if not correo:
+            return False
+        if index_linea == 0:
+            input("**No se ha encontrado el correo en la base de datos, presiona ENTER para regresar al menú principal...")
+            return False
+        else:
+            participante = darFormato(index_linea)
+            print("*"*14+" Información de participante "+"*"*14)
+            print(f'Correo: {participante[0]}\nNombre: {participante[1]}\nNacimiento: {participante[2]}\nMonto: {participante[3]}\nFolio: {participante[4]}\nMomento: {participante[5]}')
+            to_do = 0
+            while(True):
+                print("[1] Eliminar participante")
+                print("[0] Volver al menú principal")
+                to_do = input("**¿Deseas eliminar al participante?: ")
+                if bool(re.match('^[0-1]{1}$', to_do)): #Validar que la variable to_do sea un número del 0 al 1
+                    if to_do == "1":
+                        lista_datos.pop(index_linea)
+                        input("**Participante eliminado del registro, presiona ENTER para volver al menú principal...")
+                        return False
+                    elif to_do == "0":
+                        return False
+                else:
+                    input("**Selección inválida, presiona ENTER para continuar...")
         return False
 
 def validarCorreo(): #Función para validar el correo
