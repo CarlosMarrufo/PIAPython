@@ -41,7 +41,7 @@ def mostrarMenu(): #Función para mostrar el menú principal
                 break
         else:
             print("*"*60)
-            input('Opción inválida Presiona ENTER para continuar...')
+            input('**Opción inválida Presiona ENTER para continuar...')
         
 def cargarInformacion():
     global lista_datos
@@ -68,11 +68,11 @@ def registrarParticipante():
     index_linea = 0
     while(True):
         if not info_cargada: 
-            input("No se ha encontrado un archivo de datos, favor de actualizar la información...")
+            input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
             return False
         correo = validarCorreo()
         if index_linea > 0:
-            input("El correo ingresado ya se encuentra registrado, presiona ENTER para continuar...")
+            input("**El correo ingresado ya se encuentra registrado, presiona ENTER para continuar...")
         elif correo:
             nombre = validarNombre()
             nacimiento = validarNacimiento()
@@ -81,7 +81,7 @@ def registrarParticipante():
             registro = Participante(correo, nombre, nacimiento, monto, folio)
             lista_datos.append(registro.registrarParticipante())
             info_actualizada = False
-            input(f'Se ha registrado el participante {nombre.upper()} con el folio {folio}, presiona ENTER para volver al menú principal...')
+            input(f'**Se ha registrado el participante {nombre.upper()} con el folio {folio}, presiona ENTER para volver al menú principal...')
             return False
         else:
             return False
@@ -92,16 +92,16 @@ def buscarParticipante():
     global index_linea
     while(True):
         if not info_cargada:
-            input("No se ha encontrado un archivo de datos, favor de actualizar la información...")
+            input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
             return False
         correo = validarCorreo()
         if index_linea == 0:
-            input("No se ha encontrado el correo en la base de datos, presiona ENTER para regresar al menú principal...")
+            input("**No se ha encontrado el correo en la base de datos, presiona ENTER para regresar al menú principal...")
         else:
             participante = darFormato(index_linea)
             print("*"*14+" Información de participante "+"*"*14)
             print(f'Correo: {participante[0]}\nNombre: {participante[1]}\nNacimiento: {participante[2]}\nMonto: {participante[3]}\nFolio: {participante[4]}\nMomento: {participante[5]}')
-            input("Preciona ENTER para volver al menú principal...")
+            input("**Preciona ENTER para volver al menú principal...")
         return False
 
 def validarCorreo(): #Función para validar el correo
@@ -111,11 +111,11 @@ def validarCorreo(): #Función para validar el correo
     while(valido == False):
         correo = input("Ingresa el correo electrónico (10 a 40 caracteres): ")
         if correo == "": #Comprobar si se ingresa o no un correo
-            input("Presiona ENTER para regresar al menú principal...")
+            input("**Presiona ENTER para regresar al menú principal...")
             index_linea = 0
             return False
         elif len(correo) < 10 or len(correo) > 40: #Comprobar si el correo está dentro del rango de caracteres
-            input("El correo ingresado está fuera del rango de caracteres, presiona ENTER para continuar...")
+            input("**El correo ingresado está fuera del rango de caracteres, presiona ENTER para continuar...")
         elif formatoCorreo(correo):
             index_linea = 0
             for participante in lista_datos:
@@ -126,7 +126,7 @@ def validarCorreo(): #Función para validar el correo
             index_linea = 0
             valido = True
         else:
-            input("El correo ingresado no es válido, presiona ENTER para regresar al menú principal...")
+            input("**El correo ingresado no es válido, presiona ENTER para regresar al menú principal...")
             return False
     return correo
     
@@ -140,9 +140,9 @@ def validarNombre(): #Función para validar el nombre
     while(valido == False):
         nombre = input("Ingresa el nombre del participante (No espacios en blanco, de 5 a 40 caracteres): ")
         if len(nombre) < 5 or len(nombre) > 40: #Validar cantidad de caracteres
-            input("El nombre ingresado está fuera del rango de caracteres, presiona ENTER para continuar...")
+            input("**El nombre ingresado está fuera del rango de caracteres, presiona ENTER para continuar...")
         elif " " in nombre: #Validar que no contenga espacios
-            input("El nombre ingresado contiene espacios, presiona ENTER para continuar...")
+            input("**El nombre ingresado contiene espacios, presiona ENTER para continuar...")
         else:
             valido = True
     return nombre
@@ -156,7 +156,7 @@ def validarNacimiento(): #Función para comprobar si la fecha de nacimiento es v
             datetime.strptime(nacimiento, '%Y-%m-%d')
             valido = True
         except: #Es inválido
-            input("La fecha de nacimiento no es válida, comprueba el formato. Presiona ENTER para continuar...")
+            input("**La fecha de nacimiento no es válida, comprueba el formato. Presiona ENTER para continuar...")
     return nacimiento            
 
 def asignarFolio():
