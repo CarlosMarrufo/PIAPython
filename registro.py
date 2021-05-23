@@ -3,6 +3,9 @@ from datetime import datetime
 from clases import Participante
 
 lista_datos = []
+index_linea = 0
+info_actualizada = True
+
 def mostrarMenu(): #Función para mostrar el menú principal
     while(True):
         print(22*"*"+" MENÚ PRINCIPAL "+"*"*22)
@@ -22,7 +25,7 @@ def mostrarMenu(): #Función para mostrar el menú principal
             elif to_do == "2":
                 registrarParticipante()
             elif to_do == "3":
-                pass
+                buscarParticipante()
             elif to_do == "4":
                 pass
             elif to_do == "5":
@@ -46,37 +49,65 @@ def cargarInformacion():
         for linea in archivo_datos:
             datos = linea.strip()
             lista_datos.append(datos)
-        input('**Se ha cargado el archivo de datos')
+        asignarFolio()
+        input('**Se ha cargado el archivo de datos, presiona ENTER para volver al menú principal...')
     except:
         archivo_datos = open('datos.csv', 'w')
         archivo_datos.write('Correo | Nombre | Nacimiento | Monto | Folio | Momento')
-        input("**Se ha creado un archivo de datos nuevo, presiona ENTER para volver al menú")
+        input("**Se ha creado un archivo de datos nuevo, presiona ENTER para volver al menú principal...")
 
 def registrarParticipante():
     global lista_datos
+    global index_linea
+    global info_actualizada
+    index_linea = 0
     while(True):
+        correo = validarCorreo()
+        if index_linea > 0:
+            input("El correo ingresado ya se encuentra registrado, presiona ENTER para continuar...")
+        elif correo:
+            nombre = validarNombre()
+            nacimiento = validarNacimiento()
+            monto = input("Ingrese la aportación (cantidad monetaria): ")
+            folio = asignarFolio()
+            registro = Participante(correo, nombre, nacimiento, monto, folio)
+            lista_datos.append(registro.registrarParticipante())
+            input(f'Se ha registrado el participante {nombre.upper()} con el folio {folio}, presiona ENTER para volver al menú principal...')
+            info_actualizada = False
+            return False
+        else:
+            return False
+
+def buscarParticipante():
+    pass
+
+def validarCorreo(): #Función para validar el correo
+    global index_linea
+    valido = False
+    correo = ""
+    while(valido == False):
         correo = input("Ingresa el correo electrónico (10 a 40 caracteres): ")
         if correo == "": #Comprobar si se ingresa o no un correo
             input("Presiona ENTER para regresar al menú principal...")
+            index_linea = 0
             return False
         elif len(correo) < 10 or len(correo) > 40: #Comprobar si el correo está dentro del rango de caracteres
             input("El correo ingresado está fuera del rango de caracteres, presiona ENTER para continuar...")
+        elif formatoCorreo(correo):
+            index_linea = 0
+            for participante in lista_datos:
+                if correo in participante:
+                    correo = ""
+                    return index_linea
+                index_linea += 1
+            index_linea = 0
+            valido = True
         else:
-            if validarCorreo(correo): #Validar el correo
-                if correo in lista_datos: #Revisar si el correo ya está registrado
-                    input("El correo ingresado ya está registrado, presiona ENTER para regresar al menú principal...")
-                    return False
-                else:
-                    nombre = validarNombre()
-                    nacimiento = validarNacimiento()
-                    monto = input("Ingrese la aportación (cantidad monetaria): ")
-                    folio = asignarFolio()
-                    return False #Terminar while SOLO PARA TEST
-            else:
-                input("El correo ingresado no es válido, presiona ENTER para regresar al menú...")
-                return False
-
-def validarCorreo(correo): #Función para revisar si el correo ingresado es valido
+            input("El correo ingresado no es válido, presiona ENTER para regresar al menú principal...")
+            return False
+    return correo
+    
+def formatoCorreo(correo): #Función para revisar si el correo ingresado es valido
     regular_exp = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
     return re.match(regular_exp, correo) is not None
 
@@ -92,6 +123,7 @@ def validarNombre(): #Función para validar el nombre
         else:
             valido = True
     return nombre
+
 def validarNacimiento(): #Función para comprobar si la fecha de nacimiento es válida
     valido = False
     nacimiento = ""
@@ -106,7 +138,12 @@ def validarNacimiento(): #Función para comprobar si la fecha de nacimiento es v
 
 def asignarFolio():
     global lista_datos
-    print(lista_datos[0])
+    folio = 0
+    if lista_datos[-1] == lista_datos[0]:
+        folio = 12345
+    else:
+        folio = int(str(lista_datos[-1]).split(" | ")[4])
+    return folio
 
 def main(): #Función principal
     mostrarMenu()
