@@ -32,9 +32,9 @@ def mostrarMenu(): #Función para mostrar el menú principal
             elif to_do == "5":
                 eliminarParticipante()
             elif to_do == "6":
-                pass
+                mostrarParticipantes()
             elif to_do == "7":
-                pass
+                actualizarCSV()
             elif to_do == "8":
                 pass
             elif to_do == "0":
@@ -111,6 +111,7 @@ def modificarParticipante():
     global lista_datos
     global info_cargada
     global index_linea
+    global info_actualizada
     while(True):
         if not info_cargada:
             input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
@@ -130,6 +131,7 @@ def modificarParticipante():
             nacimiento = validarNacimiento()
             registro = Participante(participante[0], nombre, nacimiento, participante[3], participante[4], datetime.strptime(participante[5], "%Y-%m-%d %H:%M"))
             lista_datos[index_linea] = (registro.registrarParticipante())
+            info_actualizada = False
             input("**Se ha actualizado la información del participante, presiona ENTER para regresar al menú principal...")
         return False
 
@@ -137,6 +139,7 @@ def eliminarParticipante():
     global lista_datos
     global index_linea
     global info_cargada
+    global info_actualizada
     while(True):
         if not info_cargada:
             input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
@@ -159,13 +162,43 @@ def eliminarParticipante():
                 if bool(re.match('^[0-1]{1}$', to_do)): #Validar que la variable to_do sea un número del 0 al 1
                     if to_do == "1":
                         lista_datos.pop(index_linea)
+                        info_actualizada = False
                         input("**Participante eliminado del registro, presiona ENTER para volver al menú principal...")
                         return False
                     elif to_do == "0":
                         return False
                 else:
-                    input("**Selección inválida, presiona ENTER para continuar...")
-        return False
+                    input("**Selección inválida, presiona ENTER para continuar...")  
+def mostrarParticipantes():
+    global lista_datos
+    index_linea = 1
+    correo, nombre, nacimiento, monto, folio, momento = darFormato(0)
+    print("-"*122)
+    print ("{:<20} {:<20} {:<20} {:<20} {:<20} {:<20}".format(correo, nombre, nacimiento, monto, folio, momento))
+    print("-"*122)
+    for linea in range(len(lista_datos) -1):
+        correo, nombre, nacimiento, monto, folio, momento = darFormato(index_linea)
+        print ("{:<20} {:<20} {:<20} {:<20} {:<20} {:<20}".format(correo, nombre, nacimiento, monto, folio, momento))
+        index_linea += 1
+        if index_linea % 25 == 0: #Cada 25 lineas, mostrará nuevamente la cabecera.
+            correo, nombre, nacimiento, monto, folio, momento = darFormato(0)
+            print("-"*122)
+            print ("{:<20} {:<20} {:<20} {:<20} {:<20} {:<20}".format(correo, nombre, nacimiento, monto, folio, momento))
+            print("-"*122)
+    input("**Presiona ENTER para regresar al menú principal...")
+    return False
+
+def actualizarCSV():
+    global info_cargada
+    global info_actualizada
+    while(True):
+        if not info_cargada:
+            input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
+            return False
+        if info_actualizada:
+            input("**No se han encontrado modificaciones en el archivo de datos, presiona ENTER para volver al menú principal...")
+            return False
+    return False
 
 def validarCorreo(): #Función para validar el correo
     global index_linea
@@ -228,7 +261,7 @@ def asignarFolio():
     if lista_datos[-1] == lista_datos[0]:
         folio = 12345
     else:
-        folio = int(str(lista_datos[-1]).split(" | ")[4])
+        folio = int(str(lista_datos[-1]).split(" | ")[4]) + 1
     return folio
 
 def darFormato(index_linea): #Función para dar formato a un registro
