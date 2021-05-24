@@ -1,4 +1,4 @@
-import re, shutil, os
+import re, shutil, os, json
 from datetime import datetime
 from clases import Participante
 
@@ -36,7 +36,7 @@ def mostrarMenu(): #Función para mostrar el menú principal
             elif to_do == "7":
                 actualizarCSV()
             elif to_do == "8":
-                pass
+                serializarCSV()
             elif to_do == "0":
                 break
         else:
@@ -51,7 +51,6 @@ def cargarInformacion():
         for linea in archivo_datos:
             datos = linea.strip()
             lista_datos.append(datos)
-        asignarFolio()
         info_cargada = True
         input('**Se ha cargado el archivo de datos, presiona ENTER para volver al menú principal...')
     except:
@@ -156,9 +155,7 @@ def eliminarParticipante():
             print(f'Correo: {participante[0]}\nNombre: {participante[1]}\nNacimiento: {participante[2]}\nMonto: {participante[3]}\nFolio: {participante[4]}\nMomento: {participante[5]}')
             to_do = 0
             while(True):
-                print("[1] Eliminar participante")
-                print("[0] Volver al menú principal")
-                to_do = input("**¿Deseas eliminar al participante?: ")
+                to_do = input("**¿Deseas eliminar al participante? [1] Sí | [0] No: ")
                 if bool(re.match('^[0-1]{1}$', to_do)): #Validar que la variable to_do sea un número del 0 al 1
                     if to_do == "1":
                         lista_datos.pop(index_linea)
@@ -215,6 +212,48 @@ def actualizarCSV():
             input("Ha ocurrido un error al actualizar la información, presiona ENTER para regresar al menú principal...")
             return False
 
+def serializarCSV():
+    global info_cargada
+    global lista_datos
+    global info_cargada
+    try:
+        open("datos_json.json", "r")
+        to_do = 0
+        while(True):
+            if not info_cargada:
+                input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
+                return False
+            to_do = input("**Ya existe un archivo de datos json, ¿deseas remplazarlo? [1] Sí | [0] No: ")
+            if bool(re.match('^[0-1]{1}$', to_do)): #Validar que la variable to_do sea un número del 0 al 1
+                if to_do == "1":
+                    crearJson()
+                    return False
+                elif to_do == "0":
+                    input("**No se ha creado el archivo json, presiona ENTER para regrear al menú principal...")
+                    return False
+            else:
+                input("**Selección inválida, presiona ENTER para continuar...")
+    except:
+        crearJson()
+
+def crearJson():
+    global lista_datos
+    archivo_json = open("datos_json.json", "w")
+    arreglo_json = []
+    for registro in lista_datos:
+        arreglo = registro.strip().split(" | ")
+        arreglo = {
+            'correo': f'{arreglo[0]}',
+            'nombre': f'{arreglo[1]}',
+            'nacimiento': f'{arreglo[2]}',
+            'monto': f'{arreglo[3]}',
+            'folio': f'{arreglo[4]}',
+            'momento': f'{arreglo[5]}'
+        }
+        arreglo_json.append(arreglo)
+    archivo_json.write(json.dumps(arreglo_json))
+    input("**Se ha creado el archivo json correctamente, presiona ENTER para regrear al menú principal...")
+                    
 def validarCorreo(): #Función para validar el correo
     global index_linea
     valido = False
@@ -245,11 +284,11 @@ def formatoCorreo(correo): #Función para revisar si el correo ingresado es vali
     regular_exp = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
     return re.match(regular_exp, correo) is not None
 
-def validarNombre(): #Función para validar el nombre
+def validarNombre(): #Función para validar el nombre del participante y archivo
     valido = False
     nombre = ""
     while(valido == False):
-        nombre = input("Ingresa el nombre del participante (No espacios en blanco, de 5 a 40 caracteres): ")
+        nombre = input(f'Ingresa el nombre del participante (No espacios en blanco, de 5 a 40 caracteres): ')
         if len(nombre) < 5 or len(nombre) > 40: #Validar cantidad de caracteres
             input("**El nombre ingresado está fuera del rango de caracteres, presiona ENTER para continuar...")
         elif " " in nombre: #Validar que no contenga espacios
@@ -284,6 +323,7 @@ def darFormato(index_linea): #Función para dar formato a un registro
     return (lista_datos[index_linea].strip().split(" | "))
 
 def main(): #Función principal
+    cargarInformacion()
     mostrarMenu()
 
 main()
