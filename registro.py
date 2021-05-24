@@ -1,4 +1,4 @@
-import re
+import re, shutil, os
 from datetime import datetime
 from clases import Participante
 
@@ -191,6 +191,7 @@ def mostrarParticipantes():
 def actualizarCSV():
     global info_cargada
     global info_actualizada
+    global lista_datos
     while(True):
         if not info_cargada:
             input("**No se ha encontrado un archivo de datos, favor de actualizar la información...")
@@ -198,7 +199,21 @@ def actualizarCSV():
         if info_actualizada:
             input("**No se han encontrado modificaciones en el archivo de datos, presiona ENTER para volver al menú principal...")
             return False
-    return False
+        try:
+            archivo = shutil.copy("datos.csv", "datos.bak")
+            print("Creando copia de seguridad en (",archivo,")...")
+            os.remove("datos.csv")
+            print("Eliminando el archivo de datos...")
+            nuevo_csv = open("datos.csv", "w")
+            for registro in lista_datos:
+                nuevo_csv.write(registro + "\n")
+            print("Creando nuevo archivo de datos...")
+            input("**Actualización de la información completada, presiona ENTER para regresar al menú principal...")
+            info_actualizada = True
+            return False
+        except:
+            input("Ha ocurrido un error al actualizar la información, presiona ENTER para regresar al menú principal...")
+            return False
 
 def validarCorreo(): #Función para validar el correo
     global index_linea
