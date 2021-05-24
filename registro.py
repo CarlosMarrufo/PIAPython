@@ -6,6 +6,7 @@ lista_datos = []
 index_linea = 0
 info_cargada = False
 info_actualizada = True
+primera_carga = True
 
 def mostrarMenu(): #Función para mostrar el menú principal
     while(True):
@@ -38,7 +39,7 @@ def mostrarMenu(): #Función para mostrar el menú principal
             elif to_do == "8":
                 serializarCSV()
             elif to_do == "0":
-                break
+                cerrarPrograma()
         else:
             print("*"*60)
             input('**Opción inválida Presiona ENTER para continuar...')
@@ -46,13 +47,17 @@ def mostrarMenu(): #Función para mostrar el menú principal
 def cargarInformacion():
     global lista_datos
     global info_cargada
+    global primera_carga
     try:
         archivo_datos = open('datos.csv', 'r')
         for linea in archivo_datos:
             datos = linea.strip()
             lista_datos.append(datos)
         info_cargada = True
-        input('**Se ha cargado el archivo de datos, presiona ENTER para volver al menú principal...')
+        if primera_carga:
+            input('**Se ha cargado el archivo de datos, presiona ENTER para ingresar al sistema...')
+            primera_carga = False
+        else: input('**Se ha cargado el archivo de datos, presiona ENTER para volver al menú principal...')
     except:
         archivo_datos = open('datos.csv', 'w')
         archivo_datos.write('Correo | Nombre | Nacimiento | Monto | Folio | Momento')
@@ -165,7 +170,8 @@ def eliminarParticipante():
                     elif to_do == "0":
                         return False
                 else:
-                    input("**Selección inválida, presiona ENTER para continuar...")  
+                    input("**Selección inválida, presiona ENTER para continuar...") 
+
 def mostrarParticipantes():
     global lista_datos
     index_linea = 1
@@ -236,13 +242,32 @@ def serializarCSV():
     except:
         crearJson()
 
+def cerrarPrograma():
+    global info_actualizada
+    if not info_actualizada:
+        to_do = 0
+        while(True):
+            to_do = input("**Se han encontrado cambios en el archivo, ¿desea guardarlos? [1] Sí | [0] No: ")
+            if bool(re.match('^[0-1]{1}$', to_do)): #Validar que la variable to_do sea un número del 0 al 1
+                if to_do == "1":
+                    actualizarCSV()
+                    return False
+                elif to_do == "0":
+                    input("**Presiona ENTER para salir del sistema...")
+                    exit()
+            else:
+                input("**Selección inválida, presiona ENTER para continuar...")
+    input("**Presiona ENTER para salir del sistema...")
+    exit()
+
 def crearJson():
     global lista_datos
-    archivo_json = open("datos_json.json", "w")
-    arreglo_json = []
-    for registro in lista_datos:
-        arreglo = registro.strip().split(" | ")
-        arreglo = {
+    json_data = {}
+    json_data['Participantes'] = []
+    index_linea = 1
+    for registro in range(len(lista_datos) - 1):
+        arreglo = lista_datos[index_linea].strip().split(" | ")
+        arreglo_json = {
             'correo': f'{arreglo[0]}',
             'nombre': f'{arreglo[1]}',
             'nacimiento': f'{arreglo[2]}',
@@ -250,8 +275,10 @@ def crearJson():
             'folio': f'{arreglo[4]}',
             'momento': f'{arreglo[5]}'
         }
-        arreglo_json.append(arreglo)
-    archivo_json.write(json.dumps(arreglo_json))
+        json_data['Participantes'].append(arreglo_json)
+        index_linea += 1
+    with open("datos_json.json", "w") as archivo_json:
+        archivo_json.write(json.dumps(json_data, indent=4))
     input("**Se ha creado el archivo json correctamente, presiona ENTER para regrear al menú principal...")
                     
 def validarCorreo(): #Función para validar el correo
