@@ -21,7 +21,7 @@ def mostrarMenu(): #Función para mostrar el menú principal
         print("[8] Serializar información a JSON")
         print("[0] Salir")
         to_do = input('¿Qué opción deseas?: ')
-        if bool(re.match('^[0-9]{1}$', to_do)): #Validar que la variable toDo sea un número del 0 al 9
+        if bool(re.match('^[0-9]{1}$', to_do)): #Validar que la variable to_do sea un número del 0 al 9
             if to_do == "1":
                 cargarInformacion()
             elif to_do == "2":
@@ -44,11 +44,11 @@ def mostrarMenu(): #Función para mostrar el menú principal
             print("*"*60)
             input('**Opción inválida Presiona ENTER para continuar...')
         
-def cargarInformacion():
+def cargarInformacion(): #Función para cargar la información del archivo
     global lista_datos
     global info_cargada
     global primera_carga
-    try:
+    try: #Comprobar si existe el archive
         archivo_datos = open('datos.csv', 'r')
         for linea in archivo_datos:
             datos = linea.strip()
@@ -58,13 +58,13 @@ def cargarInformacion():
             input('**Se ha cargado el archivo de datos, presiona ENTER para ingresar al sistema...')
             primera_carga = False
         else: input('**Se ha cargado el archivo de datos, presiona ENTER para volver al menú principal...')
-    except:
+    except: #Si no existe el archivo
         archivo_datos = open('datos.csv', 'w')
-        archivo_datos.write('Correo | Nombre | Nacimiento | Monto | Folio | Momento')
+        archivo_datos.write('Correo | Nombre | Nacimiento | Monto | Folio | Momento') #Crear cabecera del archivo
         info_cargada = True
         input("**Se ha creado un archivo de datos nuevo, presiona ENTER para volver al menú principal...")
 
-def registrarParticipante():
+def registrarParticipante(): #Función para regirar un participante
     global lista_datos
     global index_linea
     global info_actualizada
@@ -90,7 +90,7 @@ def registrarParticipante():
         else:
             return False
 
-def buscarParticipante():
+def buscarParticipante(): #Función para buscar un participante
     global lista_datos
     global info_cargada
     global index_linea
@@ -111,7 +111,7 @@ def buscarParticipante():
             input("**Preciona ENTER para volver al menú principal...")
         return False
 
-def modificarParticipante():
+def modificarParticipante(): #Función para modificar un participante
     global lista_datos
     global info_cargada
     global index_linea
@@ -139,7 +139,7 @@ def modificarParticipante():
             input("**Se ha actualizado la información del participante, presiona ENTER para regresar al menú principal...")
         return False
 
-def eliminarParticipante():
+def eliminarParticipante(): #Función para eliminar un participante
     global lista_datos
     global index_linea
     global info_cargada
@@ -172,7 +172,7 @@ def eliminarParticipante():
                 else:
                     input("**Selección inválida, presiona ENTER para continuar...") 
 
-def mostrarParticipantes():
+def mostrarParticipantes(): #Función para mostrar un participante
     global lista_datos
     index_linea = 1
     correo, nombre, nacimiento, monto, folio, momento = darFormato(0)
@@ -191,7 +191,7 @@ def mostrarParticipantes():
     input("**Presiona ENTER para regresar al menú principal...")
     return False
 
-def actualizarCSV():
+def actualizarCSV(): #Función para actualizar el CSV
     global info_cargada
     global info_actualizada
     global lista_datos
@@ -218,7 +218,7 @@ def actualizarCSV():
             input("Ha ocurrido un error al actualizar la información, presiona ENTER para regresar al menú principal...")
             return False
 
-def serializarCSV():
+def serializarCSV(): #Función para serializar en JSON
     global info_cargada
     global lista_datos
     global info_cargada
@@ -242,9 +242,9 @@ def serializarCSV():
     except:
         crearJson()
 
-def cerrarPrograma():
+def cerrarPrograma(): #Función para salir del programa
     global info_actualizada
-    if not info_actualizada:
+    if not info_actualizada: #Verificar si existen cambios en el archivo
         to_do = 0
         while(True):
             to_do = input("**Se han encontrado cambios en el archivo, ¿desea guardarlos? [1] Sí | [0] No: ")
@@ -260,7 +260,7 @@ def cerrarPrograma():
     input("**Presiona ENTER para salir del sistema...")
     exit()
 
-def crearJson():
+def crearJson(): #Función para crear el archivo JSON
     global lista_datos
     json_data = {}
     json_data['Participantes'] = []
@@ -336,12 +336,12 @@ def validarNacimiento(): #Función para comprobar si la fecha de nacimiento es v
             input("**La fecha de nacimiento no es válida, comprueba el formato. Presiona ENTER para continuar...")
     return nacimiento            
 
-def asignarFolio():
+def asignarFolio(): #Función para asignar el último folio al usuario a registrar
     global lista_datos
     folio = 0
-    if lista_datos[-1] == lista_datos[0]:
+    if lista_datos[-1] == lista_datos[0]: #Si el ultimo registro de lista_datos es igual al primero, crear primer folio
         folio = 12345
-    else:
+    else: #Si no, incrementar +1 al ultimo folio
         folio = int(str(lista_datos[-1]).split(" | ")[4]) + 1
     return folio
 
